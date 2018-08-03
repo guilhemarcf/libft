@@ -76,6 +76,19 @@ SRC = ft_atoi.c\
 		ft_tolower.c\
 		ft_toupper.c\
 		ft_wrdsizes.c\
+		ft_strrev.c\
+		ft_acqinput.c\
+		ft_incr_n_trans.c\
+		ft_free_all.c\
+		ft_get_mtx_lst.c\
+		ft_mtx_count.c\
+		ft_mtx_add.c\
+		ft_mtx_new.c\
+		ft_mtx_rev.c\
+		ft_mtx_iter.c\
+		ft_mtx_print.c\
+		ft_print_tab.c\
+		get_next_line.c\
 
 .PHONY: all clean fclean re
 

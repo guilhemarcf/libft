@@ -16,6 +16,13 @@
 # include <string.h>
 # include <unistd.h>
 # include <stdlib.h>
+# include <fcntl.h>
+
+# define BUFF_SIZE 32
+# define MAX_FD 256
+
+# define AUX_BUFFER_SIZE 512
+# define MAIN_BUFFER_SIZE 4096
 
 typedef struct	s_list
 {
@@ -23,6 +30,15 @@ typedef struct	s_list
 	size_t			content_size;
 	struct s_list	*next;
 }				t_list;
+
+typedef struct	s_mtx_lst
+{
+	int					width;
+	int					height;
+	char				**mtx;
+	struct s_mtx_lst	*next;
+}				t_mtx_lst;
+
 void			*ft_memccpy(void *dst, const void *src, int c, size_t n);
 void			ft_bzero(void *s, size_t n);
 void			*ft_memcpy(void *dst, const void *src, size_t n);
@@ -82,10 +98,25 @@ void			ft_lstiter(t_list *lst, void (*f)(t_list *elem));
 t_list			*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
 int				ft_strncmp(const char *s1, const char *s2, size_t n);
 int				ft_strcmp(const char *s1, const char *s2);
+
 int				ft_cntwrds(char *s, char c);
 char			*ft_fndwrds(char *s, char c, int n);
 char			**ft_bldstr(char *s, int q_words, char c);
 int				*ft_wrdsizes(char *s, int q_words, char c);
 t_list			*ft_lstrev(t_list **lst);
+
+char			*ft_strrev(char *str);
+char			*ft_acqinput(int fd);
+char			*ft_incr_n_trans(char *str, int *size);
+void			ft_free_all(char **s, int i);
+t_mtx_lst		*ft_get_mtx_lst(int mtx_index, t_mtx_lst *mlst);
+int				ft_mtx_count(t_mtx_lst *mlst);
+void			ft_mtx_add(t_mtx_lst **amlst, t_mtx_lst *new);
+t_mtx_lst		*ft_mtx_new(char **matrix, int height, int width);
+t_mtx_lst		*ft_mtx_rev(t_mtx_lst **mlst);
+void			ft_mtx_iter(t_mtx_lst *mlst, void (*f)(t_mtx_lst *elem));
+void			ft_mtx_print(t_mtx_lst *mlst);
+void			ft_print_tab(char **s);
+int				get_next_line(const int fd, char **line);
 
 #endif
