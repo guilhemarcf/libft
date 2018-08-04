@@ -22,10 +22,12 @@ char		*ft_strjoin(char const *s1, char const *s2)
 
 	p1 = (char *)s1;
 	p2 = (char *)s2;
-	if (s1 == NULL || *s1 == '\0')
+	if (s1 == NULL && s2 != NULL)
 		return (ft_strdup((char *)s2));
-	if (s2 == NULL || *s2 == '\0')
+	if (s2 == NULL && s1 != NULL)
 		return (ft_strdup((char *)s1));
+	if (s2 == NULL && s1 == NULL)
+		return (NULL);
 	r = (char *)malloc(sizeof(*r) * (ft_strlen(p1) + ft_strlen(p2) + 1));
 	if (r == NULL)
 		return (NULL);
