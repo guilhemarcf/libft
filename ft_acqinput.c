@@ -34,7 +34,7 @@ static void	add_buff_array(char *buff, char *array)
 ** arrays before returning the complete string read from the file.
 */
 
-char	*ft_acqinput(int fd)
+char		*ft_acqinput(int fd)
 {
 	char	buff[AUX_BUFFER_SIZE];
 	int		rd;

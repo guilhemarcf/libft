@@ -30,4 +30,3 @@ void	ft_lstdel2(t_list **alst)
 		free(*flwr);
 	*alst = NULL;
 }
-

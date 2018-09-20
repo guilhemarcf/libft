@@ -30,7 +30,7 @@ char	**ft_bldstr(char *s, int q_words, char c)
 	{
 		str[i] = (char *)malloc(sizeof(char) * (w_sizes[i] + 1));
 		if (str[i] == NULL)
-		return (ft_free_all(str, i));
+			return (ft_free_all(str, i));
 	}
 	str[i] = NULL;
 	return (str);

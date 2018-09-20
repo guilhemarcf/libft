@@ -37,4 +37,3 @@ t_list	*ft_lstnew2(char *content)
 	r->next = NULL;
 	return (r);
 }
-
