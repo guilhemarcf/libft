@@ -119,4 +119,7 @@ void			ft_mtx_print(t_mtx_lst *mlst);
 void			ft_print_tab(char **s);
 int				get_next_line(const int fd, char **line);
 
+t_list			*ft_lstnew2(char *content);
+void			ft_lstdel2(t_list **alst)
+
 #endif
