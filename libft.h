@@ -18,11 +18,11 @@
 # include <stdlib.h>
 # include <fcntl.h>
 
-# define BUFF_SIZE 32
-# define MAX_FD 256
+# define BUFF_SIZE 4096
+# define MAX_FD 64000
 
-# define AUX_BUFFER_SIZE 512
-# define MAIN_BUFFER_SIZE 4096
+# define AUX_BUFFER_SIZE 4096
+# define MAIN_BUFFER_SIZE 64000
 
 typedef struct	s_list
 {

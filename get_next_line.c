@@ -12,43 +12,12 @@
 
 #include "libft.h"
 
-static char	*ft_make_line(char **ln_kpr, int fd)
-{
-	char	*temp;
-	char	*ret;
-	int		i;
+/*
+** This function will just add buffers to the existing line being read from
+** that fd.
+*/
 
-	i = -1;
-	ret = NULL;
-	while (ln_kpr[fd][++i])
-		if (ln_kpr[fd][i] == '\n' || ln_kpr[fd][i] == '\4')
-			break ;
-	temp = ln_kpr[fd];
-	ret = ft_strsub(ln_kpr[fd], 0, i);
-	if (ln_kpr[fd][i] == '\n' && ln_kpr[fd][i + 1] != '\0')
-	{
-		ln_kpr[fd] = ft_strsub(ln_kpr[fd], i + 1,
-								ft_strlen(ln_kpr[fd]) - i);
-		ft_strdel(&temp);
-	}
-	else
-		ft_strdel(&ln_kpr[fd]);
-	return (ret);
-}
-
-static void	ft_finalize(char **ln_kpr, int fd)
-{
-	char	*temp;
-
-	if (ln_kpr[fd][ft_strlen(ln_kpr[fd]) - 1] != '\n')
-	{
-		temp = ln_kpr[fd];
-		ln_kpr[fd] = ft_strjoin(ln_kpr[fd], "\4");
-		ft_strdel(&temp);
-	}
-}
-
-static void	ft_add_buff(char **ln_kpr, int fd, char *buff)
+static void	buff_add(char *buff, char **ln_kpr, int fd)
 {
 	char	*temp;
 
@@ -57,58 +26,90 @@ static void	ft_add_buff(char **ln_kpr, int fd, char *buff)
 	ft_strdel(&temp);
 }
 
-static int	read_to_buff(char **ln_kpr, int fd)
-{
-	char			buff[BUFF_SIZE + 1];
-	int				byte_count;
-	int				flag;
+/*
+** This funtions will look for the occurence of line ending chars,
+** and return the index in which they appear so that it can assign a fresh
+** string with the line to the pointer given. If it finds a newline that is not
+** followed by the end of the file, it removes the already assigned part of data
+** and restarts after the last line terminator character.
+** If it stops for anything but a new line, that means that the file was fully
+** delivered and we can simply delete the data string that was storing part of
+** it for future concatenation.
+*/
 
-	flag = 0;
-	byte_count = 0;
-	while ((byte_count = read(fd, buff, BUFF_SIZE)) > 0)
+static int	make_line(char **line, char **ln_kpr, int fd)
+{
+	int		i;
+	char	*temp;
+
+	i = 0;
+	while (ln_kpr[fd][i] != '\n' && ln_kpr[fd][i] != '\0')
+		i++;
+	*line = ft_strsub(ln_kpr[fd], 0, i);
+	if (ln_kpr[fd][i] == '\n' && ln_kpr[fd][i + 1] != '\0')
 	{
-		flag = 1;
-		buff[byte_count] = '\0';
-		ft_add_buff(ln_kpr, fd, buff);
-		if (ft_strchr(buff, '\n'))
+		temp = ln_kpr[fd];
+		ln_kpr[fd] = ft_strsub(ln_kpr[fd], i + 1, ft_strlen(ln_kpr[fd]));
+		ft_strdel(&temp);
+	}
+	else
+		ft_strdel(&ln_kpr[fd]);
+	return (1);
+}
+
+/*
+** This function reads buffers to the line keeper array and make sure to
+** signal if the file is over. If the read function returns zero from
+** reading the end of file but there is still stuff in the line, it will
+** call make_line to deliver that.
+** If it just returns 0 without entering the loop, it should return 0.
+** It the file descriptor can't be read, returns -1.
+*/
+
+static int	read_line(char **line, char **ln_kpr, int fd)
+{
+	int		numbyte;
+	char	buff[BUFF_SIZE + 1];
+
+	while ((numbyte = read(fd, buff, BUFF_SIZE)) > 0)
+	{
+		buff[numbyte] = '\0';
+		buff_add(buff, ln_kpr, fd);
+		if (ft_strchr(ln_kpr[fd], '\n'))
 			break ;
 	}
-	if (byte_count == 0)
-		if (ln_kpr[fd])
-			if (ln_kpr[fd][ft_strlen(ln_kpr[fd]) - 1] != '\n')
-				ft_finalize(ln_kpr, fd);
-	if (byte_count < 0)
+	if (numbyte == 0)
+	{
+		if (ln_kpr[fd] != NULL)
+			return (make_line(line, ln_kpr, fd));
+		else
+			return (0);
+	}
+	if (numbyte < 0)
 		return (-1);
-	if (flag == 0 && byte_count == 0)
-		return (0);
-	return (byte_count);
+	return (make_line(line, ln_kpr, fd));
 }
+
+/*
+** First I check if the file descriptor and the pointer to the line are valid.
+** If they are, I check for the existance of data already stored.
+** If there is data stored and among the data there are any of the ending
+** characters, I return the function make_line, which will deliver the line
+** there stored and the final integer.
+** Otherwise, that will mean that either there is no data or the data there
+** is incomplete, so I return the function read_line, which will either
+** read more of the file and return make_line, or return an error, or return
+** zero.
+*/
 
 int			get_next_line(const int fd, char **line)
 {
 	static char		*ln_kpr[MAX_FD];
-	int				byte_count;
 
-	byte_count = 0;
-	if (fd < 0 || line == NULL)
+	if (fd < 0 || line == NULL || fd > MAX_FD - 1)
 		return (-1);
-	if (ln_kpr[fd] != NULL && (ft_strchr(ln_kpr[fd], '\n') ||
-								ft_strchr(ln_kpr[fd], '\4')))
-		*line = ft_make_line(ln_kpr, fd);
+	if (ln_kpr[fd] != NULL && ft_strchr(ln_kpr[fd], '\n'))
+		return (make_line(line, ln_kpr, fd));
 	else
-	{
-		if ((byte_count = read_to_buff(ln_kpr, fd)) == 0)
-		{
-			if (ln_kpr[fd] && ft_strchr(ln_kpr[fd], '\4'))
-			{
-				*line = ft_make_line(ln_kpr, fd);
-				return (1);
-			}
-			return (0);
-		}
-		if (byte_count < 0)
-			return (-1);
-		*line = ft_make_line(ln_kpr, fd);
-	}
-	return (1);
+		return (read_line(line, ln_kpr, fd));
 }
