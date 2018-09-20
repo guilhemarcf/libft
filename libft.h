@@ -108,7 +108,7 @@ t_list			*ft_lstrev(t_list **lst);
 char			*ft_strrev(char *str);
 char			*ft_acqinput(int fd);
 char			*ft_incr_n_trans(char *str, int *size);
-void			ft_free_all(char **s, int i);
+char			**ft_free_all(char **s, int i);
 t_mtx_lst		*ft_get_mtx_lst(int mtx_index, t_mtx_lst *mlst);
 int				ft_mtx_count(t_mtx_lst *mlst);
 void			ft_mtx_add(t_mtx_lst **amlst, t_mtx_lst *new);

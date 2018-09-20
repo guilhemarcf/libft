@@ -34,5 +34,6 @@ int	*ft_wrdsizes(char *s, int q_words, char c)
 		}
 		w_sizes[i] = w_size;
 	}
+	free(w_sizes);
 	return (w_sizes);
 }

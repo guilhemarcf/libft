@@ -12,9 +12,10 @@
 
 #include "libft.h"
 
-void	ft_free_all(char **s, int i)
+char	**ft_free_all(char **s, int i)
 {
 	while (--i > 0)
 		free(s[i]);
 	free(s);
+	return (NULL);
 }
