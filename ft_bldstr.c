@@ -18,20 +18,17 @@ char	**ft_bldstr(char *s, int q_words, char c)
 	int		i;
 	int		*w_sizes;
 
-	i = -1;
-	w_sizes = ft_wrdsizes(s, q_words, c);
-	if (w_sizes == NULL)
+	if ((w_sizes = ft_wrdsizes(s, q_words, c)) == NULL)
 		return (NULL);
-	str = (char **)malloc(sizeof(char *) * (q_words + 1));
-	if (str == NULL)
+	if ((str = (char **)malloc(sizeof(*str) * (q_words + 1))) == NULL)
 		return (NULL);
 	i = -1;
 	while (++i < q_words)
 	{
-		str[i] = (char *)malloc(sizeof(char) * (w_sizes[i] + 1));
-		if (str[i] == NULL)
+		if ((str[i] = (char *)malloc(sizeof(**str) * (w_sizes[i] + 1))) == NULL)
 			return (ft_free_all(str, i));
 	}
 	str[i] = NULL;
+	free(w_sizes);
 	return (str);
 }
